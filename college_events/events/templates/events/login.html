@@ -1,0 +1,46 @@
+{% extends 'events/base.html' %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-box">
+    <h2>Welcome back</h2>
+    <p class="subtitle">Log in to upload photos and track your submissions.</p>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username" class="form-control"
+               placeholder="your_username" autofocus required>
+      </div>
+
+      <div class="form-group">
+        <label for="id_password">Password</label>
+        <input type="password" name="password" id="id_password" class="form-control"
+               placeholder="••••••••" required>
+      </div>
+
+      {% if form.errors %}
+        <div class="form-error" style="margin-bottom:1rem;">
+          Invalid username or password. Please try again.
+        </div>
+      {% endif %}
+
+      <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">
+        Login
+      </button>
+
+      <input type="hidden" name="next" value="{{ next }}">
+    </form>
+
+    <div class="divider">or</div>
+
+    <p style="text-align:center; font-size:0.88rem; color:var(--gray);">
+      Don't have an account?
+      <a href="{% url 'register' %}">Register here</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

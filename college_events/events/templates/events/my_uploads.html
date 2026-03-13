@@ -1,0 +1,94 @@
+{% extends 'events/base.html' %}
+{% block title %}My Photos{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+    <div>
+      <h1>My Photos</h1>
+      <p style="color:var(--gray); margin-top:0.4rem;">
+        Track the status of everything you've uploaded.
+      </p>
+    </div>
+    <a href="{% url 'upload_image' %}" class="btn btn-primary">+ Upload New Photo</a>
+  </div>
+
+  {% if images %}
+
+    <!-- Stats row -->
+    <div class="stats-bar" style="margin-bottom:2rem;">
+      <div class="stat-chip">
+        <strong>{{ images.count }}</strong>
+        Total uploads
+      </div>
+      <div class="stat-chip">
+        <strong style="color:var(--success);">{{ images|length }}</strong>
+        {# we'll count in template below #}
+        &nbsp;
+      </div>
+    </div>
+
+    <!-- Count badges by status -->
+    {% with pending_count=0 approved_count=0 rejected_count=0 %}
+    {% endwith %}
+
+    <div style="overflow-x:auto;">
+      <table class="uploads-table">
+        <thead>
+          <tr>
+            <th>Photo</th>
+            <th>Event</th>
+            <th>Caption</th>
+            <th>Uploaded</th>
+            <th>Status</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for img in images %}
+          <tr>
+            <td>
+              <a href="{{ img.image.url }}" target="_blank">
+                <img class="thumb" src="{{ img.image.url }}" alt="thumb">
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'event_gallery' img.event.id %}">{{ img.event.name }}</a>
+            </td>
+            <td style="color:var(--gray);">
+              {{ img.caption|default:"—" }}
+            </td>
+            <td style="color:var(--gray); font-size:0.82rem; white-space:nowrap;">
+              {{ img.uploaded_at|date:"d M Y" }}<br>
+              <span style="opacity:0.6;">{{ img.uploaded_at|time:"H:i" }}</span>
+            </td>
+            <td>
+              <span class="badge badge-{{ img.status }}">
+                {{ img.get_status_display }}
+              </span>
+            </td>
+            <td style="color:var(--gray); font-size:0.82rem;">
+              {% if img.status == 'rejected' and img.admin_note %}
+                {{ img.admin_note }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  {% else %}
+    <div class="empty-state">
+      <span class="empty-state-icon">📷</span>
+      <h3>No uploads yet</h3>
+      <p>Upload your first photo from a college event!</p>
+      <a href="{% url 'upload_image' %}" class="btn btn-primary" style="margin-top:1.2rem;">
+        Upload Now
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

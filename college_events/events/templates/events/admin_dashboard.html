@@ -1,0 +1,117 @@
+{% extends 'events/base.html' %}
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+    <div>
+      <div class="breadcrumb">Admin</div>
+      <h1>Review Panel</h1>
+      <p style="color:var(--gray); margin-top:0.4rem;">
+        Approve or reject student uploads before they go public.
+      </p>
+    </div>
+    <a href="{% url 'create_event' %}" class="btn btn-primary">+ New Event</a>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar" style="margin-bottom:2.5rem;">
+    <div class="stat-chip">
+      <strong style="color:var(--pending);">{{ pending_count }}</strong>
+      Pending review
+    </div>
+    <div class="stat-chip">
+      <strong style="color:var(--success);">{{ approved_count }}</strong>
+      Approved
+    </div>
+    <div class="stat-chip">
+      <strong style="color:var(--danger);">{{ rejected_count }}</strong>
+      Rejected
+    </div>
+    <div class="stat-chip">
+      <strong>{{ events.count }}</strong>
+      Active events
+    </div>
+  </div>
+
+  <!-- Pending Images -->
+  <h2 style="margin-bottom:1.2rem;">
+    Pending Review
+    {% if pending_count %}
+      <span class="badge badge-pending" style="font-size:0.75rem; margin-left:0.5rem;">
+        {{ pending_count }} new
+      </span>
+    {% endif %}
+  </h2>
+
+  {% if pending_images %}
+    <div class="admin-grid">
+      {% for img in pending_images %}
+        <div class="review-card">
+          <!-- Thumbnail -->
+          <a href="{{ img.image.url }}" target="_blank">
+            <img src="{{ img.image.url }}" alt="Uploaded image">
+          </a>
+
+          <div class="review-card-body">
+            <!-- Event + uploader info -->
+            <div style="font-size:0.75rem; color:var(--amber); font-weight:600;
+                        text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.3rem;">
+              {{ img.event.name }}
+            </div>
+            <div style="font-size:0.85rem; font-weight:600; margin-bottom:0.2rem;">
+              {{ img.uploaded_by.get_full_name|default:img.uploaded_by.username }}
+            </div>
+            {% if img.caption %}
+              <p style="font-size:0.82rem; color:var(--gray); margin-bottom:0.3rem;">
+                "{{ img.caption }}"
+              </p>
+            {% endif %}
+            <p style="font-size:0.78rem; color:var(--gray);">
+              {{ img.uploaded_at|date:"d M Y, H:i" }}
+            </p>
+
+            <!-- Review button -->
+            <div class="review-actions">
+              <a href="{% url 'review_image' img.id %}" class="btn btn-outline btn-sm">
+                Review →
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <div class="empty-state" style="padding:2.5rem 1rem;">
+      <span class="empty-state-icon">✅</span>
+      <h3>All caught up!</h3>
+      <p>No images pending review right now.</p>
+    </div>
+  {% endif %}
+
+  <!-- Events list -->
+  <h2 style="margin-top:3rem; margin-bottom:1.2rem;">Active Events</h2>
+  {% if events %}
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      {% for event in events %}
+        <div style="background:var(--navy-mid); border:1px solid rgba(255,255,255,0.07);
+                    border-radius:var(--radius); padding:1rem 1.4rem;
+                    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+          <div>
+            <strong>{{ event.name }}</strong>
+            <span style="color:var(--gray); font-size:0.82rem; margin-left:0.8rem;">{{ event.date }}</span>
+          </div>
+          <div style="display:flex; gap:0.6rem; align-items:center; font-size:0.82rem; color:var(--gray);">
+            <span>{{ event.approved_images.count }} approved</span>
+            <span>·</span>
+            <span style="color:var(--pending);">{{ event.pending_images.count }} pending</span>
+            <a href="{% url 'event_gallery' event.id %}" class="btn btn-ghost btn-sm">View Gallery</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

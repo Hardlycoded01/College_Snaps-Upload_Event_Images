@@ -1,0 +1,47 @@
+{% extends 'events/base.html' %}
+{% block title %}{{ event.name }}{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-header">
+    <div class="breadcrumb"><a href="{% url 'home' %}">Events</a> → {{ event.name }}</div>
+    <h1>{{ event.name }}</h1>
+    <p style="color:var(--gray); margin-top:0.5rem;">
+      {{ event.date }}
+      {% if event.description %} &nbsp;·&nbsp; {{ event.description }}{% endif %}
+    </p>
+    <div style="margin-top:1rem; display:flex; gap:0.8rem; flex-wrap:wrap; align-items:center;">
+      <span style="color:var(--gray); font-size:0.9rem;">{{ images.count }} photo{{ images.count|pluralize }}</span>
+      {% if user.is_authenticated %}
+        <a href="{% url 'upload_image' %}" class="btn btn-primary btn-sm">+ Upload for this event</a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if images %}
+    <div class="gallery-grid">
+      {% for img in images %}
+        <div class="gallery-item">
+          <!-- Django serves media files via MEDIA_URL in dev -->
+          <img src="{{ img.image.url }}" alt="{{ img.caption|default:event.name }}" loading="lazy">
+          <div class="gallery-item-overlay">
+            {% if img.caption %}<p>{{ img.caption }}</p>{% endif %}
+            <p style="opacity:0.7; font-size:0.75rem;">by {{ img.uploaded_by.get_full_name|default:img.uploaded_by.username }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <span class="empty-state-icon">🖼️</span>
+      <h3>No approved photos yet</h3>
+      <p>Be the first to upload!</p>
+      {% if user.is_authenticated %}
+        <a href="{% url 'upload_image' %}" class="btn btn-primary" style="margin-top:1rem;">Upload Now</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="btn btn-outline" style="margin-top:1rem;">Login to Upload</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

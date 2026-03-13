@@ -1,0 +1,94 @@
+{% extends 'events/base.html' %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-box" style="max-width:500px;">
+    <h2>Create account</h2>
+    <p class="subtitle">Join to upload and share photos from college events.</p>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;">
+        <div class="form-group">
+          <label for="{{ form.first_name.id_for_label }}">First name *</label>
+          <input type="text" name="{{ form.first_name.html_name }}"
+                 id="{{ form.first_name.id_for_label }}"
+                 class="form-control" placeholder="Rahul" autofocus
+                 value="{{ form.first_name.value|default:'' }}" required>
+          {% for error in form.first_name.errors %}
+            <div class="form-error">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.last_name.id_for_label }}">Last name</label>
+          <input type="text" name="{{ form.last_name.html_name }}"
+                 id="{{ form.last_name.id_for_label }}"
+                 class="form-control" placeholder="Sharma"
+                 value="{{ form.last_name.value|default:'' }}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.username.id_for_label }}">Username *</label>
+        <input type="text" name="{{ form.username.html_name }}"
+               id="{{ form.username.id_for_label }}"
+               class="form-control" placeholder="rahul_sharma"
+               value="{{ form.username.value|default:'' }}" required>
+        {% for error in form.username.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.email.id_for_label }}">Email *</label>
+        <input type="email" name="{{ form.email.html_name }}"
+               id="{{ form.email.id_for_label }}"
+               class="form-control" placeholder="rahul@college.edu"
+               value="{{ form.email.value|default:'' }}" required>
+        {% for error in form.email.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.password1.id_for_label }}">Password *</label>
+        <input type="password" name="{{ form.password1.html_name }}"
+               id="{{ form.password1.id_for_label }}"
+               class="form-control" placeholder="Min 8 characters" required>
+        {% for error in form.password1.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.password2.id_for_label }}">Confirm password *</label>
+        <input type="password" name="{{ form.password2.html_name }}"
+               id="{{ form.password2.id_for_label }}"
+               class="form-control" placeholder="Repeat password" required>
+        {% for error in form.password2.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Non-field errors (e.g. passwords don't match) -->
+      {% for error in form.non_field_errors %}
+        <div class="form-error" style="margin-bottom:0.8rem;">{{ error }}</div>
+      {% endfor %}
+
+      <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">
+        Create Account
+      </button>
+    </form>
+
+    <div class="divider">or</div>
+
+    <p style="text-align:center; font-size:0.88rem; color:var(--gray);">
+      Already have an account?
+      <a href="{% url 'login' %}">Login here</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

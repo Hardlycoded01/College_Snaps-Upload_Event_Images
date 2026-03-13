@@ -1,0 +1,62 @@
+{% extends 'events/base.html' %}
+{% block title %}Create Event{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <a href="{% url 'admin_dashboard' %}">Admin Panel</a> → Create Event
+    </div>
+    <h1>Create New Event</h1>
+    <p style="color:var(--gray); margin-top:0.4rem;">
+      Once created, students can upload photos for this event.
+    </p>
+  </div>
+
+  <div class="form-container">
+    <div style="background:var(--navy-mid); border:1px solid rgba(255,255,255,0.07);
+                border-radius:var(--radius); padding:2rem;">
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label for="{{ form.name.id_for_label }}">Event Name *</label>
+          <input type="text" name="{{ form.name.html_name }}"
+                 id="{{ form.name.id_for_label }}"
+                 class="form-control"
+                 placeholder="e.g. Annual Tech Fest 2025"
+                 value="{{ form.name.value|default:'' }}" required autofocus>
+          {% for error in form.name.errors %}
+            <div class="form-error">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.date.id_for_label }}">Event Date *</label>
+          <input type="date" name="{{ form.date.html_name }}"
+                 id="{{ form.date.id_for_label }}"
+                 class="form-control"
+                 value="{{ form.date.value|default:'' }}" required>
+          {% for error in form.date.errors %}
+            <div class="form-error">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.description.id_for_label }}">Description (optional)</label>
+          <textarea name="{{ form.description.html_name }}"
+                    id="{{ form.description.id_for_label }}"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Brief info about this event">{{ form.description.value|default:'' }}</textarea>
+        </div>
+
+        <div style="display:flex; gap:0.8rem; margin-top:0.5rem;">
+          <button type="submit" class="btn btn-primary">Create Event</button>
+          <a href="{% url 'admin_dashboard' %}" class="btn btn-ghost">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

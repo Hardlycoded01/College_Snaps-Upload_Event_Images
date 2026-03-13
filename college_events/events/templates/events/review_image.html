@@ -1,0 +1,137 @@
+{% extends 'events/base.html' %}
+{% block title %}Review Image{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <a href="{% url 'admin_dashboard' %}">Admin Panel</a> → Review Image
+    </div>
+    <h1>Review Image</h1>
+  </div>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:2.5rem; max-width:900px;">
+
+    <!-- Left: The image -->
+    <div>
+      <img src="{{ image.image.url }}"
+           alt="Uploaded image"
+           style="width:100%; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.08);">
+
+      <div style="margin-top:1rem; background:var(--navy-mid); border-radius:var(--radius);
+                  padding:1.2rem; border:1px solid rgba(255,255,255,0.07);">
+        <div style="display:flex; flex-direction:column; gap:0.6rem; font-size:0.88rem;">
+          <div style="display:flex; justify-content:space-between;">
+            <span style="color:var(--gray);">Event</span>
+            <strong>{{ image.event.name }}</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <span style="color:var(--gray);">Uploaded by</span>
+            <strong>{{ image.uploaded_by.get_full_name|default:image.uploaded_by.username }}</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <span style="color:var(--gray);">Date</span>
+            <span>{{ image.uploaded_at|date:"d M Y, H:i" }}</span>
+          </div>
+          {% if image.caption %}
+          <div style="display:flex; justify-content:space-between;">
+            <span style="color:var(--gray);">Caption</span>
+            <span>"{{ image.caption }}"</span>
+          </div>
+          {% endif %}
+          <div style="display:flex; justify-content:space-between;">
+            <span style="color:var(--gray);">Current status</span>
+            <span class="badge badge-{{ image.status }}">{{ image.get_status_display }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Review form -->
+    <div>
+      <div style="background:var(--navy-mid); border-radius:var(--radius);
+                  padding:1.8rem; border:1px solid rgba(255,255,255,0.07);">
+        <h3 style="margin-bottom:1.2rem;">Your Decision</h3>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label>Status</label>
+            <!-- Render radio buttons manually for better styling -->
+            <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.4rem;">
+
+              <label style="display:flex; align-items:center; gap:0.6rem; cursor:pointer;
+                             background:rgba(62,207,142,0.08); border:1.5px solid transparent;
+                             border-radius:8px; padding:0.7rem 1rem; transition:border-color 0.15s;"
+                     id="lbl-approved">
+                <input type="radio" name="status" value="approved"
+                       {% if image.status == 'approved' %}checked{% endif %}
+                       onchange="highlightLabel(this)">
+                <span class="badge badge-approved">Approved</span>
+                <span style="font-size:0.82rem; color:var(--gray);">Goes live in gallery</span>
+              </label>
+
+              <label style="display:flex; align-items:center; gap:0.6rem; cursor:pointer;
+                             background:rgba(224,82,82,0.08); border:1.5px solid transparent;
+                             border-radius:8px; padding:0.7rem 1rem; transition:border-color 0.15s;"
+                     id="lbl-rejected">
+                <input type="radio" name="status" value="rejected"
+                       {% if image.status == 'rejected' %}checked{% endif %}
+                       onchange="highlightLabel(this)">
+                <span class="badge badge-rejected">Rejected</span>
+                <span style="font-size:0.82rem; color:var(--gray);">Hidden from gallery</span>
+              </label>
+
+              <label style="display:flex; align-items:center; gap:0.6rem; cursor:pointer;
+                             background:rgba(245,166,35,0.08); border:1.5px solid transparent;
+                             border-radius:8px; padding:0.7rem 1rem; transition:border-color 0.15s;"
+                     id="lbl-pending">
+                <input type="radio" name="status" value="pending"
+                       {% if image.status == 'pending' %}checked{% endif %}
+                       onchange="highlightLabel(this)">
+                <span class="badge badge-pending">Pending</span>
+                <span style="font-size:0.82rem; color:var(--gray);">Keep for later</span>
+              </label>
+
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.admin_note.id_for_label }}">Internal Note (optional)</label>
+            <textarea name="{{ form.admin_note.html_name }}"
+                      id="{{ form.admin_note.id_for_label }}"
+                      class="form-control"
+                      rows="3"
+                      placeholder="Private note — not shown to student">{{ form.admin_note.value|default:'' }}</textarea>
+          </div>
+
+          <div style="display:flex; gap:0.8rem;">
+            <button type="submit" class="btn btn-primary" style="flex:1; justify-content:center;">
+              Save Decision
+            </button>
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-ghost">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+// Highlight the selected radio label with a border
+function highlightLabel(radio) {
+  document.querySelectorAll('[id^="lbl-"]').forEach(l => l.style.borderColor = 'transparent');
+  const colors = { approved: 'var(--success)', rejected: 'var(--danger)', pending: 'var(--pending)' };
+  document.getElementById('lbl-' + radio.value).style.borderColor = colors[radio.value];
+}
+// Run on page load to highlight current selection
+document.addEventListener('DOMContentLoaded', function() {
+  const checked = document.querySelector('input[name="status"]:checked');
+  if (checked) highlightLabel(checked);
+});
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'events/base.html' %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="hero">
+  <span class="hero-eyebrow">📸 College Event Photos</span>
+  <h1>Capture Every<br>Campus Moment</h1>
+  <p>Upload your best shots from college events. Help the social media club showcase campus life.</p>
+
+  {% if user.is_authenticated %}
+    <a href="{% url 'upload_image' %}" class="btn btn-primary">Upload Photos</a>
+    &nbsp;
+    <a href="{% url 'my_uploads' %}" class="btn btn-outline">My Uploads</a>
+  {% else %}
+    <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+    &nbsp;
+    <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+  {% endif %}
+</div>
+
+<!-- Events Section -->
+<div class="page">
+  <div class="page-header">
+    <h2>Upcoming &amp; Recent Events</h2>
+    <p style="color:var(--gray); margin-top:0.4rem; font-size:0.9rem;">
+      Click an event to see approved photos
+    </p>
+  </div>
+
+  {% if events_data %}
+    <div class="event-grid">
+      {% for item in events_data %}
+        <a href="{% url 'event_gallery' item.event.id %}" class="event-card">
+          <div class="event-card-date">{{ item.event.date }}</div>
+          <h3>{{ item.event.name }}</h3>
+          {% if item.event.description %}
+            <p style="color:var(--gray); font-size:0.85rem; margin-top:0.5rem;">
+              {{ item.event.description|truncatewords:15 }}
+            </p>
+          {% endif %}
+          <div class="event-card-count">
+            📷 {{ item.image_count }} approved photo{{ item.image_count|pluralize }}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <span class="empty-state-icon">🗓️</span>
+      <h3>No events yet</h3>
+      <p>Ask your admin to create the first event!</p>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

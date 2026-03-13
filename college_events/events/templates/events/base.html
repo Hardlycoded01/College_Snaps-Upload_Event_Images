@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}CampusSnap{% endblock %} — College Event Photos</title>
+  <link rel="stylesheet" href="{% static 'events/css/main.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- ── Navbar ──────────────────────────────────────────────── -->
+  <nav class="navbar">
+    <a href="{% url 'home' %}" class="navbar-brand">Campus<span>Snap</span></a>
+
+    <ul class="navbar-links">
+      <li><a href="{% url 'home' %}">Events</a></li>
+
+      {% if user.is_authenticated %}
+        <li><a href="{% url 'upload_image' %}">Upload</a></li>
+        <li><a href="{% url 'my_uploads' %}">My Photos</a></li>
+        {% if user.is_staff %}
+          <li><a href="{% url 'admin_dashboard' %}">Admin Panel</a></li>
+        {% endif %}
+        <li>
+          <form method="post" action="{% url 'logout' %}" style="display:inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-ghost btn-sm">Logout</button>
+          </form>
+        </li>
+      {% else %}
+        <li><a href="{% url 'login' %}">Login</a></li>
+        <li><a href="{% url 'register' %}" class="btn-nav">Register</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <!-- ── Flash Messages ──────────────────────────────────────── -->
+  {% if messages %}
+    <div id="messages-container" style="max-width:1200px; margin: 1rem auto; padding: 0 2rem;">
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="message message-{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% else %}
+    <div id="messages-container" style="max-width:1200px; margin: 0 auto; padding: 0 2rem;"></div>
+  {% endif %}
+
+  <!-- ── Main Content ─────────────────────────────────────────── -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────────── -->
+  <footer style="text-align:center; padding: 2.5rem 1rem; color: var(--gray); font-size: 0.82rem; border-top: 1px solid rgba(255,255,255,0.06); margin-top: 4rem;">
+    <p>CampusSnap &mdash; Made for students, by students &nbsp;·&nbsp; Practice project</p>
+  </footer>
+
+  <script src="{% static 'events/js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
