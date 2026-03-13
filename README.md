@@ -60,8 +60,8 @@ college_events/
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/YOUR_USERNAME/campussnap.git
-cd campussnap
+git clone gh repo clone Hardlycoded01/College_Snaps-Upload_Event_Images
+cd college_events
 ```
 
 ### 2. Create virtual environment
