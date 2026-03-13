@@ -167,4 +167,4 @@ Ideas to add next:
 
 ---
 
-*Built as a practice project to learn Django — [Your Name], [Year]*
+*Built as a practice project to learn Django — hardlycoded, 2026*
